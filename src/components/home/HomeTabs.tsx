@@ -1,25 +1,28 @@
-import React, { useState } from "react";
+import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-export default function HomeTabs() {
-  const [active, setActive] = useState<"rent" | "room">("rent");
+interface HomeTabsProps {
+  activeTab: "rent" | "room";
+  setActiveTab: (tab: "rent" | "room") => void;
+}
 
+export default function HomeTabs({ activeTab, setActiveTab }: HomeTabsProps) {
   return (
     <View style={styles.wrapper}>
       <Pressable
-        style={[styles.tab, active === "rent" && styles.active]}
-        onPress={() => setActive("rent")}
+        style={[styles.tab, activeTab === "rent" && styles.active]}
+        onPress={() => setActiveTab("rent")}
       >
-        <Text style={[styles.text, active === "rent" && styles.activeText]}>
+        <Text style={[styles.text, activeTab === "rent" && styles.activeText]}>
           Flats for rent
         </Text>
       </Pressable>
 
       <Pressable
-        style={[styles.tab, active === "room" && styles.active]}
-        onPress={() => setActive("room")}
+        style={[styles.tab, activeTab === "room" && styles.active]}
+        onPress={() => setActiveTab("room")}
       >
-        <Text style={[styles.text, active === "room" && styles.activeText]}>
+        <Text style={[styles.text, activeTab === "room" && styles.activeText]}>
           Find rooms
         </Text>
       </Pressable>

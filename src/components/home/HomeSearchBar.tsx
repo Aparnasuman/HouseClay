@@ -1,16 +1,28 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
-export default function HomeSearchBar() {
+
+interface HomeSearchBarProps {
+  onSearch?: (query: string) => void;
+}
+
+export default function HomeSearchBar({ onSearch }: HomeSearchBarProps) {
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = () => {
+    if (onSearch) onSearch(searchText);
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
         placeholder="Koramangala"
         style={styles.input}
         placeholderTextColor="#999"
+        value={searchText}
+        onChangeText={setSearchText}
       />
-
-      <Pressable style={styles.searchBtn}>
+      <Pressable style={styles.searchBtn} onPress={handleSearch}>
         <Ionicons name="search" size={20} color="#fff" />
       </Pressable>
     </View>

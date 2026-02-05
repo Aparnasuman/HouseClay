@@ -1,4 +1,4 @@
-import { PropertyCategory } from "@/common/enums";
+import { PropertyCategory } from "@/src/common/enums";
 
 export interface PropertySearch {
   propertyID: string;

@@ -1,4 +1,4 @@
-import { PropertyCategory } from "@/common/enums";
+import { PropertyCategory } from "@/src/common/enums";
 
 // FLATMATE form payload - derived from the transformer structure
 export interface FlatmateForm {

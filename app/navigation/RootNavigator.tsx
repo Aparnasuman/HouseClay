@@ -1,23 +1,25 @@
+import { PropertyCategory } from "@/src/common/enums";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AuthFlowScreen from "../screens/AuthFlowScreen";
+import PropertySearchClient from "../screens/PropertySearchScreen";
 import AppDrawer from "./AppDrawer";
 
-const Stack = createNativeStackNavigator();
+export type RootStackParamList = {
+  AppDrawer: undefined;
+  AuthFlow: undefined;
+  PropertySearchClient: { propertyCategory: PropertyCategory };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Main App */}
       <Stack.Screen name="AppDrawer" component={AppDrawer} />
-
-      {/* Auth Flow Modal */}
+      <Stack.Screen name="AuthFlow" component={AuthFlowScreen} />
       <Stack.Screen
-        name="AuthFlow"
-        component={AuthFlowScreen}
-        options={{
-          presentation: "card",
-          animation: "slide_from_right",
-        }}
+        name="PropertySearchClient"
+        component={PropertySearchClient}
       />
     </Stack.Navigator>
   );

@@ -1,4 +1,4 @@
-import { PropertyCategory } from "@/common/enums";
+import { PropertyCategory } from "@/src/common/enums";
 
 import { FlatmateForm } from "./FlatmateForm";
 import { RentForm } from "./RentForm";

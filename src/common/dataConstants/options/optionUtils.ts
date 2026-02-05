@@ -2,7 +2,7 @@ import {
   BaseOption,
   NumericOptionConfig,
   OptionValue,
-} from "@/interfaces/Options";
+} from "@/src/interfaces/Options";
 
 export const generateNumericOptions = (
   config: NumericOptionConfig,

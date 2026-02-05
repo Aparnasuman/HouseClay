@@ -1,6 +1,6 @@
-import { CDN_BASE_URL } from "@/common/constants";
-import { PropertyCategory } from "@/common/enums";
-import { fileDataFromUrl, processPropertyImages } from "@/common/utils";
+import { CDN_BASE_URL } from "@/src/common/constants";
+import { PropertyCategory } from "@/src/common/enums";
+import { fileDataFromUrl, processPropertyImages } from "@/src/common/utils";
 
 import {
   FlatmateAdditionalInfo,

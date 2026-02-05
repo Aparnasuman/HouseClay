@@ -1,5 +1,5 @@
-import { PropertyCategory } from "@/common/enums";
-import { Location } from "@/interfaces/Location";
+import { PropertyCategory } from "@/src/common/enums";
+import { Location } from "@/src/interfaces/Location";
 
 export interface PropertySearchFilter {
   // Quick Filters

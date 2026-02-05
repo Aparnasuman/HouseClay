@@ -1,4 +1,4 @@
-import { PropertyCategory, PropertyListingType } from "@/common/enums";
+import { PropertyCategory, PropertyListingType } from "@/src/common/enums";
 
 import { FormValues } from "./FormValues";
 import { PropertyImage } from "./PropertyImage";

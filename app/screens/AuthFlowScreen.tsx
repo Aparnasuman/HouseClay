@@ -50,7 +50,7 @@ export default function AuthFlowScreen() {
   const otpRefs = useRef<Array<TextInput | null>>(Array(OTP_LENGTH).fill(null));
   const timerRef = useRef<number | null>(null);
 
-  const { checkUser, sendOTP, verifyOTP, registerUser } = useAuthFlow();
+  const { checkUser, sendOTP, verifyOTPLogin, registerUser } = useAuthFlow();
 
   // ---------------- PHONE VALIDATION ----------------
   const validPhone = /^\+91\d{10}$/.test(phoneNo);
@@ -91,18 +91,26 @@ export default function AuthFlowScreen() {
     setLoading(true);
 
     try {
-      const exists = await checkUser(phoneNo); // Check if user exists
-      setIsNewUser(!exists);
+      const status = await checkUser(phoneNo);
 
-      await sendOTP(phoneNo); // Send OTP
+      if (status === "new") {
+        // go to create user screen first
+        setIsNewUser(true);
+        dispatch(setAuthStep(AuthStep.CREATE_USER));
+        return;
+      }
+
+      // existing user → send otp
+      setIsNewUser(false);
+
+      await sendOTP(phoneNo);
 
       setOtpCode(Array(OTP_LENGTH).fill(""));
       dispatch(setAuthStep(AuthStep.OTP));
       focusOtp(0);
       startTimer();
     } catch (err: any) {
-      console.error("sendOTP error:", err);
-      setError(err.message || "Failed to send OTP");
+      setError(err.message || "Failed");
     } finally {
       setLoading(false);
     }
@@ -124,24 +132,26 @@ export default function AuthFlowScreen() {
 
   const handleVerify = async () => {
     if (otpCode.some((d) => !d)) return;
+
     setLoading(true);
     setError("");
 
     try {
       const otpStr = otpCode.join("");
-      if (!isNewUser) {
-        const success = await verifyOTP(phoneNo, otpStr);
-        if (success) {
-          dispatch(setAuthStep(AuthStep.LOGGED_IN));
-          navigateAfterLogin();
-        } else {
-          setError("Invalid OTP");
-          setOtpCode(Array(OTP_LENGTH).fill(""));
-          focusOtp(0);
-        }
+
+      if (isNewUser) {
+        await registerUser({
+          phoneNo,
+          name,
+          email,
+          otp: otpStr,
+        });
       } else {
-        dispatch(setAuthStep(AuthStep.CREATE_USER));
+        await verifyOTPLogin(phoneNo, otpStr);
       }
+
+      dispatch(setAuthStep(AuthStep.LOGGED_IN));
+      navigateAfterLogin();
     } catch (err: any) {
       setError(err.message || "Verification failed");
       setOtpCode(Array(OTP_LENGTH).fill(""));
@@ -156,19 +166,20 @@ export default function AuthFlowScreen() {
       setError("Please enter name and email");
       return;
     }
-    if (otpCode.some((d) => !d)) {
-      setError("Enter complete OTP");
-      return;
-    }
+
     setLoading(true);
     setError("");
 
     try {
-      await registerUser({ phoneNo, name, email, otp: otpCode.join("") });
-      dispatch(setAuthStep(AuthStep.LOGGED_IN));
-      navigateAfterLogin();
+      // send otp first
+      await sendOTP(phoneNo);
+
+      setOtpCode(Array(OTP_LENGTH).fill(""));
+      dispatch(setAuthStep(AuthStep.OTP));
+      focusOtp(0);
+      startTimer();
     } catch (err: any) {
-      setError(err.message || "Failed to register user");
+      setError(err.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -322,6 +333,22 @@ export default function AuthFlowScreen() {
           {authStep === AuthStep.CREATE_USER && (
             <View style={styles.formContainer}>
               <Text style={styles.title}>Create New Account</Text>
+              <TextInput
+                placeholder="+91XXXXXXXXXX"
+                keyboardType="number-pad"
+                maxLength={13} // +91 + 10 digits
+                value={phoneNo}
+                onChangeText={(text) => {
+                  // Remove non-digits
+                  let digits = text.replace(/\D/g, "");
+
+                  // Ensure prefix 91
+                  if (!digits.startsWith("91")) digits = "91" + digits;
+
+                  setPhoneNo("+" + digits.slice(0, 12));
+                }}
+                style={styles.input}
+              />
               <TextInput
                 placeholder="Full Name"
                 value={name}

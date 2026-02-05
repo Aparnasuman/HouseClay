@@ -1,4 +1,4 @@
-import { PaymentFilterStatus } from "@/common/enums";
+import { PaymentFilterStatus } from "@/src/common/enums";
 
 export interface MyProfileFormValues {
   name: string;

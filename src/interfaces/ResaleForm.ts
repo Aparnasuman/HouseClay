@@ -1,4 +1,4 @@
-import { PropertyCategory } from "@/common/enums";
+import { PropertyCategory } from "@/src/common/enums";
 
 // Complete RESALE form payload
 export interface ResaleForm {

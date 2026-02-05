@@ -1,4 +1,4 @@
-import { PropertyCategory, PropertyStatus } from "@/common/enums";
+import { PropertyCategory, PropertyStatus } from "@/src/common/enums";
 
 export interface AuthUserDetail {
   name: string;

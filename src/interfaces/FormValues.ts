@@ -1,4 +1,4 @@
-import { PropertyCategory } from "@/common/enums";
+import { PropertyCategory } from "@/src/common/enums";
 
 import { AdditionalInfo } from "./AdditionalInfo";
 import { FlatmateDetails } from "./FlatmateDetails";

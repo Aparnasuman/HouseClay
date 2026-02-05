@@ -2,8 +2,8 @@ import {
   PreferredTenantValue,
   PropertyTypeValue,
   TenantTypeValue,
-} from "@/common/enums";
-import { BaseOption, PriceOption } from "@/interfaces/Options";
+} from "@/src/common/enums";
+import { BaseOption, PriceOption } from "@/src/interfaces/Options";
 
 import { generateNumericOptions } from "./optionUtils";
 
