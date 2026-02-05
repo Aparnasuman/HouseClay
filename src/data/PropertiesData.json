@@ -1,0 +1,240 @@
+{
+  "properties": [
+    {
+      "propertyID": "1",
+      "propertyType": "Apartment",
+      "builtUpArea": 1790,
+      "bhkType": "3BHK",
+      "bathrooms": 3,
+      "rent": null,
+      "furnishing": "Semi-furnished",
+      "price": 2300000,
+      "city": "Bengaluru",
+      "locationOrSocietyName": "Sobha Royal Pavilion",
+      "landmark": "Nagavarapalya, 15th cross, Landmark - Life in...",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "image": "/photos/House1.avif",
+      "images": [
+        "/photos/House1.avif",
+        "/photos/House2.avif",
+        "/photos/House3.avif",
+        "/photos/House4.avif"
+      ],
+      "badges": "Featured"
+    },
+    {
+      "propertyID": "2",
+      "propertyType": "Apartment",
+      "builtUpArea": 1360,
+      "bhkType": "3BHK",
+      "bathrooms": 2,
+      "rent": null,
+      "furnishing": "Semi-furnished",
+      "price": 1700000,
+      "city": "Bengaluru",
+      "locationOrSocietyName": "Prestige Lakeside Habitat",
+      "landmark": "Varthur, Gunjur, Bangalore",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "image": "/photos/House2.avif",
+      "images": [
+        "/photos/House2.avif",
+        "/photos/House1.avif",
+        "/photos/House3.avif",
+        "/photos/House4.avif"
+      ],
+      "badges": null
+    },
+    {
+      "propertyID": "3",
+      "propertyType": "Apartment",
+      "builtUpArea": 1180,
+      "bhkType": "2BHK",
+      "bathrooms": 2,
+      "rent": null,
+      "furnishing": "Semi-furnished",
+      "price": 1300000,
+      "city": "Bengaluru",
+      "locationOrSocietyName": "Sobha Neopolis",
+      "landmark": "Gunjur Road, Bangalore",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "image": "/photos/House4.avif",
+      "images": [
+        "/photos/House4.avif",
+        "/photos/House1.avif",
+        "/photos/House3.avif",
+        "/photos/House2.avif"
+      ],
+      "badges": "Exclusive"
+    },
+    {
+      "propertyID": "4",
+      "propertyType": "Apartment",
+      "builtUpArea": 1240,
+      "bhkType": "2BHK",
+      "bathrooms": 2,
+      "rent": null,
+      "furnishing": "Semi-furnished",
+      "price": 2200000,
+      "city": "Bengaluru",
+      "locationOrSocietyName": "Durga Petals",
+      "landmark": "Doddenakundi, Marathahalli, Bangalore",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "image": "/photos/House3.avif",
+      "images": [
+        "/photos/House3.avif",
+        "/photos/House4.avif",
+        "/photos/House2.avif",
+        "/photos/House1.avif"
+      ],
+      "badges": "Exclusive"
+    },
+    {
+      "propertyID": "5",
+      "propertyType": "Apartment",
+      "builtUpArea": 1240,
+      "bhkType": "2BHK",
+      "bathrooms": 2,
+      "rent": null,
+      "furnishing": "Semi-furnished",
+      "price": 2200000,
+      "city": "Bengaluru",
+      "locationOrSocietyName": "Durga Petals",
+      "landmark": "Doddenakundi, Marathahalli, Bangalore",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "image": "/photos/House3.avif",
+      "images": [
+        "/photos/House3.avif",
+        "/photos/House4.avif",
+        "/photos/House2.avif",
+        "/photos/House1.avif"
+      ],
+      "badges": "Exclusive"
+    },
+    {
+      "propertyID": "6",
+      "propertyType": "Apartment",
+      "builtUpArea": 1180,
+      "bhkType": "2BHK",
+      "bathrooms": 2,
+      "rent": null,
+      "furnishing": "Semi-furnished",
+      "price": 1300000,
+      "city": "Bengaluru",
+      "locationOrSocietyName": "Sobha Neopolis",
+      "landmark": "Gunjur Road, Bangalore",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "image": "/photos/House4.avif",
+      "images": [
+        "/photos/House4.avif",
+        "/photos/House1.avif",
+        "/photos/House3.avif",
+        "/photos/House2.avif"
+      ],
+      "badges": "Exclusive"
+    },
+    {
+      "propertyID": "7",
+      "propertyType": "Apartment",
+      "builtUpArea": 1360,
+      "bhkType": "3BHK",
+      "bathrooms": 2,
+      "rent": null,
+      "furnishing": "Semi-furnished",
+      "price": 1700000,
+      "city": "Bengaluru",
+      "locationOrSocietyName": "Prestige Lakeside Habitat",
+      "landmark": "Varthur, Gunjur, Bangalore",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "image": "/photos/House2.avif",
+      "images": [
+        "/photos/House2.avif",
+        "/photos/House1.avif",
+        "/photos/House3.avif",
+        "/photos/House4.avif"
+      ],
+      "badges": null
+    },
+    {
+      "propertyID": "8",
+      "propertyType": "Apartment",
+      "builtUpArea": 1790,
+      "bhkType": "3BHK",
+      "bathrooms": 3,
+      "rent": null,
+      "furnishing": "Semi-furnished",
+      "price": 2300000,
+      "city": "Bengaluru",
+      "locationOrSocietyName": "Sobha Royal Pavilion",
+      "landmark": "Nagavarapalya, 15th cross, Landmark - Life in...",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "image": "/photos/House1.avif",
+      "images": [
+        "/photos/House1.avif",
+        "/photos/House2.avif",
+        "/photos/House3.avif",
+        "/photos/House4.avif"
+      ],
+      "badges": "Featured"
+    }
+  ],
+  "neighbourhoods": [
+    { "name": "Whitefield", "image": "/neighbourhood/Whitefield.webp" },
+    { "name": "Koramangala", "image": "/neighbourhood/Koramangala.webp" },
+    { "name": "Indiranagar", "image": "/neighbourhood/Indiranagar.webp" },
+    { "name": "HSR Layout", "image": "/neighbourhood/HSR.webp" },
+    { "name": "Jayanagar", "image": "/neighbourhood/Jayanagar.webp" },
+    { "name": "Hebbal", "image": "/neighbourhood/Hebbal.webp" },
+    { "name": "Sarjapur Road", "image": "/neighbourhood/Sarjapur Road.webp" },
+    { "name": "Banashankari", "image": "/neighbourhood/Banashankari.webp" }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "Samir T.",
+      "initial": "S",
+      "avatar": "/people/shourya_testimonial.jpg",
+      "rating": 5,
+      "content": "Finding the perfect home felt effortless with HouseClay. The team was incredibly supportive, guiding me through every step and providing all the resources I needed."
+    },
+    {
+      "id": 2,
+      "name": "Rajesh M.",
+      "initial": "R",
+      "avatar": "/people/rohit_testimonial.jpg",
+      "rating": 5,
+      "content": "The extensive listings, along with accurate property details and legal assistance, made this a smooth, stress-free journey."
+    },
+    {
+      "id": 3,
+      "name": "Aditya C.",
+      "initial": "A",
+      "avatar": "/people/aman_testimonial.jpg",
+      "rating": 5,
+      "content": "The verified properties and transparent details made all the difference. Their commitment to quality and customer support reassured me, and I'm thrilled with my purchase."
+    },
+    {
+      "id": 4,
+      "name": "Priya K.",
+      "initial": "P",
+      "avatar": "/people/priya_testimonial.jpg",
+      "rating": 5,
+      "content": "As a first-time buyer, I was nervous about the process. The team at HouseClay made everything so simple and straightforward. Couldn't be happier!"
+    },
+    {
+      "id": 5,
+      "name": "Vikram S.",
+      "initial": "V",
+      "avatar": "/people/vikram_testimonial.png",
+      "rating": 5,
+      "content": "After months of searching elsewhere, I found my dream apartment within two weeks of using this platform. The filters and neighborhood insights were game-changers."
+    }
+  ]
+}
