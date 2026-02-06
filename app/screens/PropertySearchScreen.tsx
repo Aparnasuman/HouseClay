@@ -1,16 +1,16 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ArrowLeft, Search, SlidersHorizontal } from "lucide-react-native";
+import { ArrowLeft, SlidersHorizontal } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
+import PlacesAutocomplete from "@/src/base_component/PlacesAutocomplete";
 import { PropertyCategory } from "@/src/common/enums";
 import { useGetPropertiesByLocationQuery } from "@/src/store/apiSlice";
 import Properties from "./Properties";
@@ -28,21 +28,37 @@ type NavProp = NativeStackNavigationProp<
 export default function PropertySearchClient() {
   const navigation = useNavigation<NavProp>();
 
-  const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(0);
   const [propertyCategory] = useState(PropertyCategory.RENT);
 
-  const lat = 12.9716;
-  const lon = 77.5946;
+  const [lat, setLat] = useState(12.9716);
+  const [lon, setLon] = useState(77.5946);
 
-  const { data, isLoading, isFetching } = useGetPropertiesByLocationQuery({
-    latitude: lat,
-    longitude: lon,
-    propertyCategory,
-    page,
-  });
+  // ✅ force refetch when lat/lon/page change
+  const { data, isLoading, isFetching } = useGetPropertiesByLocationQuery(
+    {
+      latitude: lat,
+      longitude: lon,
+      propertyCategory,
+      page,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   const properties = useMemo(() => data?.items ?? [], [data]);
+
+  const handleLocationSelect = (_data: any, details: any) => {
+    console.log("PLACE SELECTED:", details);
+
+    const loc = details?.geometry?.location;
+    if (!loc) return;
+
+    setLat(loc.lat);
+    setLon(loc.lng);
+    setPage(0);
+  };
 
   const handleLoadMore = () => {
     if (data?.hasNext && !isFetching) {
@@ -68,14 +84,11 @@ export default function PropertySearchClient() {
           <ArrowLeft size={22} />
         </TouchableOpacity>
 
-        <View style={styles.searchBox}>
-          <TextInput
-            placeholder="Search for a property"
-            value={searchText}
-            onChangeText={setSearchText}
-            style={styles.input}
+        <View style={{ flex: 1 }}>
+          <PlacesAutocomplete
+            placeholder="Search location"
+            onLocationSelect={handleLocationSelect}
           />
-          <Search size={18} />
         </View>
 
         <TouchableOpacity style={styles.iconBtn}>
@@ -91,6 +104,7 @@ export default function PropertySearchClient() {
           data={properties}
           keyExtractor={(i) => i.propertyID.toString()}
           renderItem={renderItem}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 40 }}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.4}
@@ -107,6 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F4F6",
     paddingTop: 50,
     paddingHorizontal: 12,
+    overflow: "visible",
   },
 
   header: {
@@ -114,21 +129,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     marginBottom: 12,
-  },
-
-  searchBox: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#E5E7EB",
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    height: 40,
-  },
-
-  input: {
-    flex: 1,
-    fontSize: 14,
+    zIndex: 50,
+    overflow: "visible",
   },
 
   iconBtn: {

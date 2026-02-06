@@ -81,3 +81,6 @@ export interface UserDetailsDTO {
 export interface GetUserDetailResponse {
   user: UserDetailsDTO;
 }
+
+
+

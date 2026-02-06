@@ -10,18 +10,25 @@ import {
 } from "@/src/common/dataConstants/options";
 import { BadgeType, PropertyCategory } from "@/src/common/enums";
 import { formatINRCurrency, processPropertyImages } from "@/src/common/utils";
+import ImageCarousel from "@/src/hoc/ImageCarousel";
 import { useShortlist } from "@/src/hooks/useShortlist";
 import { PropertySearch } from "@/src/interfaces/PropertySearch";
 import { PropertyCardWithImages } from "@/src/interfaces/User";
 import { Crown, Heart, MapPin, Star } from "lucide-react-native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import {
     Dimensions,
-    Image,
+    FlatList,
     Pressable,
     StyleSheet,
     Text,
-    View,
+    View
 } from "react-native";
 
 const { width } = Dimensions.get("window");
@@ -43,24 +50,26 @@ const Properties: React.FC<PropertiesProps> = ({
   showCarouselDots = true,
   onPress,
 }) => {
-  // --- State ---
+  const flatListRef = useRef<FlatList>(null);
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const { toggleShortlist, isShortlisted } = useShortlist();
   const [isShortlistedProperty, setIsShortlistedProperty] = useState(
     isShortlisted(property.propertyID),
   );
 
-  // --- Derived Values ---
+  // -------- Derived values --------
+
   const propertyCategory = property?.propertyCategory ?? PropertyCategory.RENT;
+
   const propertyType = getOptionLabel(
     PROPERTY_TYPE_OPTIONS,
     property.propertyType,
   );
+
   const bhkType = getOptionLabel(BHK_TYPE_OPTIONS, property.bhkType);
   const furnishing = getOptionLabel(FURNISHING_OPTIONS, property.furnishing);
-  const formattedPrice = formatINRCurrency(
-    property?.price || property?.rent || 0,
-  );
   const tenantType = getOptionLabel(TENANT_TYPE_OPTIONS, property.tenantType);
   const roomType = getOptionLabel(ROOM_TYPE_OPTIONS, property.roomType);
   const bathroomType = getOptionLabel(
@@ -70,6 +79,10 @@ const Properties: React.FC<PropertiesProps> = ({
   const balconyType = getOptionLabel(
     BALCONY_TYPE_OPTIONS,
     property.balconyType,
+  );
+
+  const formattedPrice = formatINRCurrency(
+    property?.price || property?.rent || 0,
   );
 
   const bedrooms =
@@ -88,10 +101,20 @@ const Properties: React.FC<PropertiesProps> = ({
     [property.images],
   );
 
-  // --- Carousel ---
+  // -------- Carousel Logic --------
+
   const nextImage = useCallback(() => {
-    setCurrentImageIndex((prev) => (prev + 1) % propertyImages.length);
-  }, [propertyImages.length]);
+    if (!propertyImages.length) return;
+
+    const nextIndex = (currentImageIndex + 1) % propertyImages.length;
+
+    flatListRef.current?.scrollToIndex({
+      index: nextIndex,
+      animated: true,
+    });
+
+    setCurrentImageIndex(nextIndex);
+  }, [currentImageIndex, propertyImages.length]);
 
   useEffect(() => {
     if (autoplay && propertyImages.length > 1) {
@@ -100,28 +123,28 @@ const Properties: React.FC<PropertiesProps> = ({
     }
   }, [autoplay, autoplayInterval, nextImage, propertyImages.length]);
 
-  // --- Handlers ---
+  // -------- Handlers --------
+
   const handleShortlist = async () => {
     const newStatus = await toggleShortlist(property as PropertyCardWithImages);
     setIsShortlistedProperty(newStatus);
   };
 
-  // --- Render ---
+  // -------- Render --------
+
   return (
     <Pressable
       style={styles.card}
       onPress={onPress}
       android_ripple={{ color: "#ccc" }}
     >
-      {/* Image Carousel */}
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: propertyImages[currentImageIndex] }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+      {/* ================= IMAGE CAROUSEL ================= */}
 
-        {/* Badge */}
+      <View style={styles.imageContainer}>
+        <ImageCarousel images={propertyImages} height={200} autoplay showDots />
+
+        {/* -------- Badge -------- */}
+
         {badgeType && (
           <View style={styles.badge}>
             <View style={styles.badgeContent}>
@@ -146,7 +169,8 @@ const Properties: React.FC<PropertiesProps> = ({
           </View>
         )}
 
-        {/* Shortlist Button */}
+        {/* -------- Heart -------- */}
+
         <Pressable style={styles.heartButton} onPress={handleShortlist}>
           <Heart
             size={20}
@@ -155,7 +179,8 @@ const Properties: React.FC<PropertiesProps> = ({
           />
         </Pressable>
 
-        {/* Carousel Dots */}
+        {/* -------- Dots -------- */}
+
         {showCarouselDots && propertyImages.length > 1 && (
           <View style={styles.dotsContainer}>
             {propertyImages.map((_, index) => (
@@ -165,14 +190,21 @@ const Properties: React.FC<PropertiesProps> = ({
                   styles.dot,
                   index === currentImageIndex && styles.activeDot,
                 ]}
-                onPress={() => setCurrentImageIndex(index)}
+                onPress={() => {
+                  flatListRef.current?.scrollToIndex({
+                    index,
+                    animated: true,
+                  });
+                  setCurrentImageIndex(index);
+                }}
               />
             ))}
           </View>
         )}
       </View>
 
-      {/* Property Info */}
+      {/* ================= INFO ================= */}
+
       <View style={styles.infoContainer}>
         <View style={styles.row}>
           <Text style={styles.categoryBadge}>
@@ -182,6 +214,7 @@ const Properties: React.FC<PropertiesProps> = ({
                 ? `${roomType} Room for ${tenantType}`
                 : null}
           </Text>
+
           <Text style={styles.locationText}>
             {property.locationOrSocietyName}
           </Text>
@@ -191,22 +224,17 @@ const Properties: React.FC<PropertiesProps> = ({
           <Text style={styles.detailsText}>
             {propertyCategory === PropertyCategory.RENT
               ? `${bedrooms} | ${bathrooms} | ${furnishing}`
-              : propertyCategory === PropertyCategory.FLATMATE
-                ? `${bhkType === "Studio" ? "1 RK" : bhkType} | ${bathroomType} | ${balconyType}`
-                : ""}
+              : `${bhkType} | ${bathroomType} | ${balconyType}`}
           </Text>
+
           <Text style={styles.priceText}>{formattedPrice}</Text>
         </View>
 
-        <View style={styles.row}>
-          <Text style={styles.areaText}>
-            {propertyCategory === PropertyCategory.RENT
-              ? `Buildup Area ${property.builtUpArea || "N/A"} Sq. Ft`
-              : propertyCategory === PropertyCategory.FLATMATE
-                ? furnishing
-                : ""}
-          </Text>
-        </View>
+        <Text style={styles.areaText}>
+          {propertyCategory === PropertyCategory.RENT
+            ? `Buildup Area ${property.builtUpArea || "N/A"} Sq. Ft`
+            : furnishing}
+        </Text>
 
         <View style={styles.landmarkRow}>
           <MapPin size={14} color="#6b7280" />
@@ -219,6 +247,10 @@ const Properties: React.FC<PropertiesProps> = ({
   );
 };
 
+export default Properties;
+
+// ================= STYLES =================
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
@@ -226,15 +258,16 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 10,
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
     elevation: 3,
   },
-  imageContainer: { width: "100%", height: 200 },
-  image: { width: "100%", height: "100%" },
+
+  imageContainer: {
+    width: "100%",
+    height: 200,
+  },
+
   badge: { position: "absolute", top: 10, left: 10 },
+
   badgeContent: {
     flexDirection: "row",
     alignItems: "center",
@@ -243,6 +276,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 8,
   },
+
   iconCircle: {
     width: 18,
     height: 18,
@@ -251,8 +285,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 4,
   },
+
   badgeText: { fontSize: 12, fontWeight: "500" },
+
   heartButton: { position: "absolute", top: 10, right: 10 },
+
   dotsContainer: {
     position: "absolute",
     bottom: 10,
@@ -260,6 +297,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
+
   dot: {
     width: 6,
     height: 6,
@@ -267,27 +305,41 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.5)",
     marginHorizontal: 3,
   },
+
   activeDot: { backgroundColor: "#fff" },
+
   infoContainer: { padding: 10 },
+
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 4,
   },
+
   categoryBadge: {
     fontSize: 12,
-    color: "#000",
     backgroundColor: "#f3f4f6",
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 12,
   },
+
   locationText: { fontSize: 12, color: "#6b7280", flexShrink: 1 },
+
   priceRow: { alignItems: "center" },
-  detailsText: { fontSize: 12, color: "#111" },
+
+  detailsText: { fontSize: 12 },
+
   priceText: { fontSize: 14, fontWeight: "bold" },
+
   areaText: { fontSize: 12, color: "#6b7280" },
-  landmarkRow: { flexDirection: "row", alignItems: "center", marginTop: 4 },
+
+  landmarkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+
   landmarkText: {
     fontSize: 12,
     color: "#6b7280",
@@ -295,5 +347,3 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
 });
-
-export default Properties;
