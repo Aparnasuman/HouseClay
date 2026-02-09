@@ -1,33 +1,72 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const FOOTER_ITEMS = [
-  { label: "Explore", icon: "search-outline", route: "/explore" },
-  { label: "Shortlists", icon: "heart-outline", route: "/shortlists" },
-  { label: "Home", icon: "home-outline", route: "/" },
-  { label: "Contacts", icon: "call-outline", route: "/contacts" },
-  { label: "Profile", icon: "person-outline", route: "/profile" },
-];
+import { RootStackParamList } from "../../app/navigation/RootNavigator";
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export default function MobileFooter() {
-  const router = useRouter();
+  const navigation = useNavigation<Nav>();
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.safeArea}>
       <View style={styles.footer}>
-        {FOOTER_ITEMS.map((item) => (
-          <Pressable key={item.label} style={styles.item}>
-            <Ionicons name={item.icon as any} size={24} color="#6a6464" />
-            <Text style={styles.label}>{item.label}</Text>
-          </Pressable>
-        ))}
+        {/* Explore */}
+        <Pressable style={styles.item}>
+          <Ionicons name="search-outline" size={24} color="#6a6464" />
+          <Text style={styles.label}>Explore</Text>
+        </Pressable>
+
+        {/* Shortlists */}
+        <Pressable
+          style={styles.item}
+          onPress={() => navigation.navigate("ShortlistsScreen")}
+        >
+          <Ionicons name="heart-outline" size={24} color="#6a6464" />
+          <Text style={styles.label}>Shortlists</Text>
+        </Pressable>
+
+        {/* Home → Drawer → Home */}
+        <Pressable
+          style={styles.item}
+          onPress={() =>
+            navigation.navigate("AppDrawer", {
+              screen: "Home",
+            } as never)
+          }
+        >
+          <Ionicons name="home-outline" size={24} color="#000" />
+          <Text style={[styles.label, { color: "#000", fontWeight: "600" }]}>
+            Home
+          </Text>
+        </Pressable>
+
+        {/* Contacts */}
+        <Pressable
+          style={styles.item}
+          onPress={() => navigation.navigate("AuthFlow")}
+        >
+          <Ionicons name="call-outline" size={24} color="#6a6464" />
+          <Text style={styles.label}>Contacts</Text>
+        </Pressable>
+
+        {/* Profile */}
+        <Pressable
+          style={styles.item}
+          onPress={() => navigation.navigate("AuthFlow")}
+        >
+          <Ionicons name="person-outline" size={24} color="#6a6464" />
+          <Text style={styles.label}>Profile</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: "#fff",

@@ -1,12 +1,12 @@
 import {
-    BALCONY_TYPE_OPTIONS,
-    BATHROOM_TYPE_OPTIONS,
-    BHK_TYPE_OPTIONS,
-    FURNISHING_OPTIONS,
-    getOptionLabel,
-    PROPERTY_TYPE_OPTIONS,
-    ROOM_TYPE_OPTIONS,
-    TENANT_TYPE_OPTIONS,
+  BALCONY_TYPE_OPTIONS,
+  BATHROOM_TYPE_OPTIONS,
+  BHK_TYPE_OPTIONS,
+  FURNISHING_OPTIONS,
+  getOptionLabel,
+  PROPERTY_TYPE_OPTIONS,
+  ROOM_TYPE_OPTIONS,
+  TENANT_TYPE_OPTIONS,
 } from "@/src/common/dataConstants/options";
 import { BadgeType, PropertyCategory } from "@/src/common/enums";
 import { formatINRCurrency, processPropertyImages } from "@/src/common/utils";
@@ -14,24 +14,11 @@ import ImageCarousel from "@/src/hoc/ImageCarousel";
 import { useShortlist } from "@/src/hooks/useShortlist";
 import { PropertySearch } from "@/src/interfaces/PropertySearch";
 import { PropertyCardWithImages } from "@/src/interfaces/User";
-import { Crown, Heart, MapPin, Star } from "lucide-react-native";
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
-import {
-    Dimensions,
-    FlatList,
-    Pressable,
-    StyleSheet,
-    Text,
-    View
-} from "react-native";
 
-const { width } = Dimensions.get("window");
+import { Crown, Heart, MapPin, Star } from "lucide-react-native";
+
+import React, { useEffect, useMemo, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 interface PropertiesProps {
   property: PropertySearch;
@@ -50,16 +37,20 @@ const Properties: React.FC<PropertiesProps> = ({
   showCarouselDots = true,
   onPress,
 }) => {
-  const flatListRef = useRef<FlatList>(null);
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
   const { toggleShortlist, isShortlisted } = useShortlist();
-  const [isShortlistedProperty, setIsShortlistedProperty] = useState(
-    isShortlisted(property.propertyID),
-  );
 
-  // -------- Derived values --------
+  // ✅ match Next.js logic
+  const shortlistStatus = isShortlisted(property.propertyID);
+
+  const [isShortlistedProperty, setIsShortlistedProperty] =
+    useState(shortlistStatus);
+
+  // ✅ keep synced with redux shortlist
+  useEffect(() => {
+    setIsShortlistedProperty(shortlistStatus);
+  }, [shortlistStatus]);
+
+  // ================= DERIVED VALUES =================
 
   const propertyCategory = property?.propertyCategory ?? PropertyCategory.RENT;
 
@@ -85,12 +76,11 @@ const Properties: React.FC<PropertiesProps> = ({
     property?.price || property?.rent || 0,
   );
 
-  const bedrooms =
-    bhkType === "Studio" || bhkType === "1 BHK"
+  const bedrooms = bhkType
+    ? bhkType === "Studio" || bhkType === "1 BHK"
       ? "1 Bed"
-      : bhkType
-        ? `${bhkType.split("BHK")[0]} Beds`
-        : "N/A";
+      : `${bhkType.split("BHK")[0]} Beds`
+    : "N/A";
 
   const bathrooms = property.bathrooms
     ? `${property.bathrooms} ${property.bathrooms > 1 ? "Baths" : "Bath"}`
@@ -101,49 +91,33 @@ const Properties: React.FC<PropertiesProps> = ({
     [property.images],
   );
 
-  // -------- Carousel Logic --------
+  // ================= HANDLERS =================
 
-  const nextImage = useCallback(() => {
-    if (!propertyImages.length) return;
-
-    const nextIndex = (currentImageIndex + 1) % propertyImages.length;
-
-    flatListRef.current?.scrollToIndex({
-      index: nextIndex,
-      animated: true,
-    });
-
-    setCurrentImageIndex(nextIndex);
-  }, [currentImageIndex, propertyImages.length]);
-
-  useEffect(() => {
-    if (autoplay && propertyImages.length > 1) {
-      const interval = setInterval(nextImage, autoplayInterval);
-      return () => clearInterval(interval);
-    }
-  }, [autoplay, autoplayInterval, nextImage, propertyImages.length]);
-
-  // -------- Handlers --------
-
-  const handleShortlist = async () => {
+  const handleShortlistPress = async () => {
     const newStatus = await toggleShortlist(property as PropertyCardWithImages);
     setIsShortlistedProperty(newStatus);
   };
 
-  // -------- Render --------
+  // ================= RENDER =================
 
   return (
     <Pressable
       style={styles.card}
+      android_ripple={{ color: "#e5e7eb" }}
       onPress={onPress}
-      android_ripple={{ color: "#ccc" }}
     >
-      {/* ================= IMAGE CAROUSEL ================= */}
+      {/* ========= IMAGE CAROUSEL ========= */}
 
       <View style={styles.imageContainer}>
-        <ImageCarousel images={propertyImages} height={200} autoplay showDots />
+        <ImageCarousel
+          images={propertyImages}
+          height={200}
+          autoplay={autoplay}
+          autoplayInterval={autoplayInterval}
+          showDots={showCarouselDots}
+        />
 
-        {/* -------- Badge -------- */}
+        {/* ===== BADGE ===== */}
 
         {badgeType && (
           <View style={styles.badge}>
@@ -162,6 +136,7 @@ const Properties: React.FC<PropertiesProps> = ({
                   <Crown size={12} color="#d97706" />
                 )}
               </View>
+
               <Text style={styles.badgeText}>
                 {badgeType === BadgeType.Featured ? "Featured" : "Exclusive"}
               </Text>
@@ -169,41 +144,25 @@ const Properties: React.FC<PropertiesProps> = ({
           </View>
         )}
 
-        {/* -------- Heart -------- */}
+        {/* ===== HEART ===== */}
 
-        <Pressable style={styles.heartButton} onPress={handleShortlist}>
+        <Pressable
+          style={styles.heartButton}
+          onPress={(e) => {
+            e.stopPropagation(); // ✅ prevent card press
+            handleShortlistPress();
+          }}
+          hitSlop={10}
+        >
           <Heart
-            size={20}
+            size={22}
             fill={isShortlistedProperty ? "#ec4899" : "none"}
             color={isShortlistedProperty ? "#ec4899" : "#6b7280"}
           />
         </Pressable>
-
-        {/* -------- Dots -------- */}
-
-        {showCarouselDots && propertyImages.length > 1 && (
-          <View style={styles.dotsContainer}>
-            {propertyImages.map((_, index) => (
-              <Pressable
-                key={index}
-                style={[
-                  styles.dot,
-                  index === currentImageIndex && styles.activeDot,
-                ]}
-                onPress={() => {
-                  flatListRef.current?.scrollToIndex({
-                    index,
-                    animated: true,
-                  });
-                  setCurrentImageIndex(index);
-                }}
-              />
-            ))}
-          </View>
-        )}
       </View>
 
-      {/* ================= INFO ================= */}
+      {/* ========= INFO ========= */}
 
       <View style={styles.infoContainer}>
         <View style={styles.row}>
@@ -212,10 +171,10 @@ const Properties: React.FC<PropertiesProps> = ({
               ? propertyType
               : propertyCategory === PropertyCategory.FLATMATE
                 ? `${roomType} Room for ${tenantType}`
-                : null}
+                : ""}
           </Text>
 
-          <Text style={styles.locationText}>
+          <Text style={styles.locationText} numberOfLines={1}>
             {property.locationOrSocietyName}
           </Text>
         </View>
@@ -238,7 +197,7 @@ const Properties: React.FC<PropertiesProps> = ({
 
         <View style={styles.landmarkRow}>
           <MapPin size={14} color="#6b7280" />
-          <Text style={styles.landmarkText}>
+          <Text style={styles.landmarkText} numberOfLines={1}>
             {property.landmark || "No landmark"}
           </Text>
         </View>
