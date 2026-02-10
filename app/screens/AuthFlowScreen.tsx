@@ -1,5 +1,4 @@
 // src/screens/AuthFlowScreen.tsx
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -15,6 +14,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
+import PhoneStepLoginUI from "./auth/PhoneStepLoginUI";
+import PhoneStepProfileUI from "./auth/PhoneStepProfileUI";
 
 import { AuthStep } from "@/src/common/enums";
 import {
@@ -212,6 +213,20 @@ export default function AuthFlowScreen() {
       navigation.goBack();
     }
   };
+  const handlePhoneChange = (text: string) => {
+    // remove all non-digits
+    let digits = text.replace(/\D/g, "");
+
+    // ensure country code 91
+    if (!digits.startsWith("91")) {
+      digits = "91" + digits;
+    }
+
+    // keep only +91 + 10 digits
+    digits = digits.slice(0, 12);
+
+    setPhoneNo("+" + digits);
+  };
 
   useEffect(() => {
     if (authStep === AuthStep.OTP) focusOtp(0);
@@ -229,59 +244,29 @@ export default function AuthFlowScreen() {
         style={{ flex: 1 }}
       >
         {/* ✅ Modal Header */}
-        <View style={styles.modalHeader}>
-          <Text style={styles.modalTitle}>Log In to Your Account</Text>
-
-          <Pressable
-            onPress={() => {
-              navigation.goBack();
-              dispatch(setAuthStep(AuthStep.PHONE));
-            }}
-          >
-            <Ionicons name="close" size={24} color="#555" />
-          </Pressable>
-        </View>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
         >
           {/* PHONE STEP */}
-          {authStep === AuthStep.PHONE && (
-            <View style={styles.formContainer}>
-              <Text>
-                <Text style={styles.title}>No spam </Text>
-                <Text style={styles.p}>just Updates</Text>
-              </Text>
-              <Text style={styles.subtitle}>Phone Number</Text>
-              <TextInput
-                placeholder="+91XXXXXXXXXX"
-                keyboardType="number-pad"
-                maxLength={13} // +91 + 10 digits
-                value={phoneNo}
-                onChangeText={(text) => {
-                  // Remove non-digits
-                  let digits = text.replace(/\D/g, "");
-
-                  // Ensure prefix 91
-                  if (!digits.startsWith("91")) digits = "91" + digits;
-
-                  setPhoneNo("+" + digits.slice(0, 12));
-                }}
-                style={styles.input}
+          {authStep === AuthStep.PHONE &&
+            (loginFromLoginPage ? (
+              <PhoneStepLoginUI
+                phoneNo={phoneNo}
+                onChangePhone={handlePhoneChange}
+                error={error}
+                loading={loading}
+                onContinue={handleSendOTP}
+                onClose={() => navigation.goBack()}
               />
-              {!!error && <Text style={styles.error}>{error}</Text>}
-              <Pressable
-                style={[styles.button, loading && styles.buttonDisabled]}
-                onPress={handleSendOTP}
-                disabled={loading}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.buttonText}>Continue</Text>
-                )}
-              </Pressable>
-            </View>
-          )}
+            ) : (
+              <PhoneStepProfileUI
+                phoneNo={phoneNo}
+                onChangePhone={handlePhoneChange}
+                error={error}
+                loading={loading}
+                onContinue={handleSendOTP}
+              />
+            ))}
 
           {/* OTP STEP */}
           {authStep === AuthStep.OTP && (

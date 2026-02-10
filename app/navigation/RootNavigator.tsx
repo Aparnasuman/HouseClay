@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { PropertySearch } from "@/src/interfaces/PropertySearch";
 import AuthFlowScreen from "../screens/AuthFlowScreen";
-import LoginScreen from "../screens/LoginScreen";
 import PropertyDetails from "../screens/PropertyDetails";
 import PropertySearchClient from "../screens/PropertySearchScreen";
 import ShortlistsScreen from "../screens/ShortListedScreen";
@@ -43,14 +42,6 @@ export default function RootNavigator() {
         component={PropertyDetails}
         options={{
           animation: "slide_from_bottom",
-        }}
-      />
-      <Stack.Screen
-        name="LoginScreen"
-        component={LoginScreen}
-        options={{
-          animation: "slide_from_bottom",
-          headerShown: false,
         }}
       />
     </Stack.Navigator>

@@ -1,12 +1,14 @@
+import { setLoginFromLoginPage } from "@/src/store/authSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerActions, useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux"; // ✅ useSelector directly
+import { useDispatch, useSelector } from "react-redux"; // ✅ useSelector directly
 
 export default function MobileHeader() {
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch();
 
   /* ✅ Redux selectors directly */
   const isAuthenticated = useSelector(
@@ -21,7 +23,9 @@ export default function MobileHeader() {
   };
 
   const openLogin = () => {
-    navigation.navigate("AuthFlow"); // navigate to your AuthModal/flow
+    dispatch(setLoginFromLoginPage(true)); // tells AuthFlow which UI to show
+    navigation.navigate("AuthFlow");
+    // navigate to your AuthModal/flow
   };
 
   /* ---------------- UI ---------------- */

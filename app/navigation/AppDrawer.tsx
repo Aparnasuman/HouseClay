@@ -2,7 +2,6 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import CustomDrawer from "../../src/components/customDrawer";
 import MobileHeader from "../../src/components/MobileHeader";
 import HomeScreen from "../screens/HomeScreen";
-import LoginScreen from "../screens/LoginScreen";
 const Drawer = createDrawerNavigator();
 
 export default function AppDrawer() {
@@ -21,13 +20,6 @@ export default function AppDrawer() {
         component={HomeScreen}
         options={{
           header: () => <MobileHeader />, // ✅ header inside drawer
-        }}
-      />
-      <Drawer.Screen
-        name="LoginScreen"
-        component={LoginScreen}
-        options={{
-          header: () => false, // ✅ header inside drawer
         }}
       />
     </Drawer.Navigator>

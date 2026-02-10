@@ -1,6 +1,5 @@
 // src/components/CustomDrawer.tsx
-import { AuthStep } from "@/src/common/enums";
-import { logout, setAuthStep } from "@/src/store/authSlice";
+import { logout } from "@/src/store/authSlice";
 import { clearUserDetail } from "@/src/store/userSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
@@ -10,6 +9,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useAuthFlow } from "@/src/store/useAuthFlow";
+
+import { setLoginFromLoginPage } from "@/src/store/authSlice";
 
 // ---------------- MENU ITEMS ----------------
 const menuItems = [
@@ -39,7 +40,7 @@ export default function CustomDrawer({
 
   // ---------------- OPEN LOGIN ----------------
   const openLogin = () => {
-    dispatch(setAuthStep(AuthStep.PHONE)); // set to PHONE step
+    dispatch(setLoginFromLoginPage(true)); // tells AuthFlow which UI to show// set to PHONE step
     navigation.closeDrawer();
     navigation.navigate("AuthFlow"); // navigate to AuthFlow screen
   };

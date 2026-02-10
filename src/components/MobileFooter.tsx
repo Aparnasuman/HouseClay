@@ -1,16 +1,24 @@
+import { setLoginFromLoginPage } from "@/src/store/authSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { useDispatch } from "react-redux";
 import { RootStackParamList } from "../../app/navigation/RootNavigator";
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 export default function MobileFooter() {
   const navigation = useNavigation<Nav>();
+
+  const dispatch = useDispatch();
+
+  const openLogin = () => {
+    dispatch(setLoginFromLoginPage(false)); // tells AuthFlow which UI to show
+    navigation.navigate("AuthFlow");
+  };
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.safeArea}>
@@ -55,10 +63,7 @@ export default function MobileFooter() {
         </Pressable>
 
         {/* Profile */}
-        <Pressable
-          style={styles.item}
-          onPress={() => navigation.navigate("LoginScreen")}
-        >
+        <Pressable style={styles.item} onPress={openLogin}>
           <Ionicons name="person-outline" size={24} color="#6a6464" />
           <Text style={styles.label}>Profile</Text>
         </Pressable>
