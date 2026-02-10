@@ -117,7 +117,7 @@ export default function ShortlistScreen() {
               showCarouselDots={false}
               onPress={() =>
                 navigation.navigate("PropertyDetails", {
-                  propertyID: item.propertyID,
+                  property: item,
                 })
               }
             />

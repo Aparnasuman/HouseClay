@@ -57,7 +57,7 @@ export default function MobileFooter() {
         {/* Profile */}
         <Pressable
           style={styles.item}
-          onPress={() => navigation.navigate("AuthFlow")}
+          onPress={() => navigation.navigate("LoginScreen")}
         >
           <Ionicons name="person-outline" size={24} color="#6a6464" />
           <Text style={styles.label}>Profile</Text>

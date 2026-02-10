@@ -1,7 +1,9 @@
 import { PropertyCategory } from "@/src/common/enums";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import { PropertySearch } from "@/src/interfaces/PropertySearch";
 import AuthFlowScreen from "../screens/AuthFlowScreen";
+import LoginScreen from "../screens/LoginScreen";
 import PropertyDetails from "../screens/PropertyDetails";
 import PropertySearchClient from "../screens/PropertySearchScreen";
 import ShortlistsScreen from "../screens/ShortListedScreen";
@@ -12,10 +14,8 @@ export type RootStackParamList = {
   AuthFlow: undefined;
   PropertySearchClient: { propertyCategory: PropertyCategory };
   ShortlistsScreen: undefined;
-  PropertyDetails: {
-    propertyID: string;
-    propertyDetails?: any; // optional preloaded property
-  };
+  LoginScreen: undefined;
+  PropertyDetails: { property: PropertySearch }; // ✅ added
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -29,10 +29,30 @@ export default function RootNavigator() {
         name="PropertySearchClient"
         component={PropertySearchClient}
       />
-      <Stack.Screen name="ShortlistsScreen" component={ShortlistsScreen} />
+      <Stack.Screen
+        name="ShortlistsScreen"
+        component={ShortlistsScreen}
+        options={{
+          animation: "slide_from_bottom",
+        }}
+      />
 
       {/* ✅ ADD THIS */}
-      <Stack.Screen name="PropertyDetails" component={PropertyDetails} />
+      <Stack.Screen
+        name="PropertyDetails"
+        component={PropertyDetails}
+        options={{
+          animation: "slide_from_bottom",
+        }}
+      />
+      <Stack.Screen
+        name="LoginScreen"
+        component={LoginScreen}
+        options={{
+          animation: "slide_from_bottom",
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }

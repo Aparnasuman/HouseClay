@@ -162,13 +162,16 @@ export const apiSlice = createApi({
       }),
     }),
 
-    getMyPropertyById: builder.query<unknown, string>({
-      query: (id) => `/property/user/${id}`,
-    }),
+  getMyPropertyById: builder.query<unknown, string>({
+  query: (id) => ({
+    url: `https://houseclay.com/api/property-details/${id}`,
+  }),
+}),
+
 
     getPublicPropertyById: builder.query<unknown, string>({
       query: (id) => ({
-        url: `/property/${id}`,
+         url: `https://houseclay.com/api/property-details/${id}`,
         keepUnusedDataFor: 3600, // Keep cached data for 5 minutes (300 seconds)
         headers: {
           // Explicitly exclude Authorization header for public endpoint

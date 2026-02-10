@@ -7,6 +7,7 @@ interface AuthState {
   authStep: AuthStep;
   loginFromAddProperty: boolean;
   loginFromLoginPage: boolean;
+  
 }
 
 const initialState: AuthState = {
@@ -14,6 +15,7 @@ const initialState: AuthState = {
   authStep: AuthStep.NONE,
   loginFromAddProperty: false,
   loginFromLoginPage: false,
+  
 };
 
 const authSlice = createSlice({

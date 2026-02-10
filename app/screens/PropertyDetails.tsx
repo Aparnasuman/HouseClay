@@ -1,175 +1,250 @@
-import { RouteProp, useRoute } from "@react-navigation/native";
-import React from "react";
+import { RootStackParamList } from "@/app/navigation/RootNavigator";
+import { processPropertyImages } from "@/src/common/utils";
+import ImageCarousel from "@/src/hoc/ImageCarousel";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { ArrowLeft, Heart, Share2 } from "lucide-react-native";
+import React, { useMemo } from "react";
 import {
-  ActivityIndicator,
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import {
-  useGetMyPropertyByIdQuery,
-  useGetPublicPropertyByIdQuery,
-} from "@/src/store/apiSlice";
-import { RootState } from "@/src/store/store";
-import { useSelector } from "react-redux";
-
-import { PostedAndRentDetailsRN } from "@/src/components/propertyDetail/PostedAndRentDetailsRN";
-import { PropertyStatusPillRN } from "@/src/components/propertyDetail/PropertyStatusPillRN";
-import { UpgradePropertyBannerRN } from "@/src/components/propertyDetail/UpgradePropertyBannerRN";
-
-import { PropertyCategory } from "@/src/common/enums";
-
-/* ================= TYPES ================= */
-
-type RootStackParamList = {
-  PropertyDetails: { propertyID: string };
-};
-
-type PropertyDetailsRouteProp = RouteProp<
-  RootStackParamList,
-  "PropertyDetails"
->;
-
-/* ================= SCREEN ================= */
+type RouteType = RouteProp<RootStackParamList, "PropertyDetails">;
+const { width } = Dimensions.get("window");
 
 export default function PropertyDetails() {
-  const route = useRoute<PropertyDetailsRouteProp>();
-  const propertyID = route.params?.propertyID;
+  const route = useRoute<RouteType>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  // ✅ check if user is logged in using authSlice
-  const isLoggedIn = useSelector(
-    (state: RootState) => state.auth.isAuthenticated,
-  );
-
-  // ✅ RTK query: choose depending on login status
-  const { data, isLoading, isFetching, error, refetch } = isLoggedIn
-    ? useGetMyPropertyByIdQuery(propertyID!, { skip: !propertyID })
-    : useGetPublicPropertyByIdQuery(propertyID!, { skip: !propertyID });
-
-  const property = data as any;
-  const propertyUpdates = isLoggedIn
-    ? ((data as any)?.propertyUpdates ?? [])
-    : [];
-  const contactedUsers = isLoggedIn ? ((data as any)?.contactUsers ?? []) : [];
-
-  /* ================= LOADING ================= */
-  if (isLoading) {
-    return (
-      <SafeAreaView style={styles.center}>
-        <ActivityIndicator size="large" />
-      </SafeAreaView>
-    );
-  }
-
-  /* ================= ERROR ================= */
-  if (error) {
-    return (
-      <SafeAreaView style={styles.center}>
-        <Text>Unable to fetch property details</Text>
-        <Text onPress={refetch} style={{ marginTop: 12, color: "blue" }}>
-          Retry
-        </Text>
-      </SafeAreaView>
-    );
-  }
+  const property = route.params.property;
 
   if (!property) {
     return (
       <SafeAreaView style={styles.center}>
-        <Text>Property not found</Text>
+        <Text>No property data</Text>
       </SafeAreaView>
     );
   }
+  const propertyImages = useMemo(
+    () => processPropertyImages(property.images),
+    [property.images],
+  );
 
-  /* ================= UI ================= */
+  const price = property.price ?? property.rent ?? 0;
+
   return (
     <SafeAreaView style={styles.safe}>
-      {isFetching && !isLoading && (
-        <ActivityIndicator style={styles.topSpinner} />
-      )}
+      {/* ---------- IMAGE CAROUSEL ---------- */}
+
+      <View>
+        <ImageCarousel images={propertyImages} height={200} />
+
+        {/* overlay icons */}
+        <View style={styles.topBar}>
+          <IconBtn onPress={() => navigation.goBack()}>
+            <ArrowLeft size={20} />
+          </IconBtn>
+
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <IconBtn>
+              <Share2 size={18} />
+            </IconBtn>
+            <IconBtn>
+              <Heart size={18} />
+            </IconBtn>
+          </View>
+        </View>
+      </View>
+
+      {/* ---------- CONTENT ---------- */}
 
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>{property.propertyName ?? "Property"}</Text>
+        {/* Title */}
+        <Text style={styles.title}>{property.locationOrSocietyName}</Text>
 
-        {property.propertyStatus && (
-          <PropertyStatusPillRN status={property.propertyStatus} />
-        )}
+        {/* Location */}
+        <Text style={styles.location}>{property.city}</Text>
+
+        {/* ---------- QUICK FEATURES CARD ---------- */}
 
         <View style={styles.card}>
-          <Text style={styles.label}>Category</Text>
-          <Text style={styles.value}>
-            {property.propertyCategory ?? PropertyCategory.NONE}
-          </Text>
-
-          <Text style={styles.label}>BHK</Text>
-          <Text style={styles.value}>{property.bhkType ?? "-"}</Text>
-
-          <Text style={styles.label}>Area</Text>
-          <Text style={styles.value}>
-            {property.locality ?? property.addressLine ?? "-"}
-          </Text>
+          <Feature label="Category" value={property.propertyCategory} />
+          <Feature label="Type" value={property.propertyType} />
+          <Feature label="BHK" value={property.bhkType} />
+          <Feature label="Bathrooms" value={property.bathrooms} />
+          <Feature label="Furnishing" value={property.furnishing} />
+          <Feature label="Area" value={`${property.builtUpArea} sq.ft`} />
         </View>
 
-        <PostedAndRentDetailsRN
-          property={property}
-          propertyUpdates={propertyUpdates}
-        />
+        {/* ---------- DESCRIPTION ---------- */}
 
-        {isLoggedIn && (
-          <View style={styles.statsRow}>
-            <Stat label="Contacts" value={contactedUsers.length} />
-            <Stat label="Views" value={property.viewUserCount ?? 0} />
-            <Stat label="Shortlists" value={property.shortlistUserCount ?? 0} />
-          </View>
-        )}
+        <>
+          <Text style={styles.sectionTitle}>Description</Text>
+          <Text style={styles.desc}> {property.landmark || "No landmark"}</Text>
+        </>
 
-        {/* UPGRADE - optional */}
-        <UpgradePropertyBannerRN onUpgrade={() => {}} />
+        {/* ---------- OTHER DETAILS GRID ---------- */}
+
+        <Text style={styles.sectionTitle}>Other Details</Text>
+
+        <View style={styles.grid}>
+          <GridItem label="City" value={property.city} />
+        </View>
+
+        <View style={{ height: 120 }} />
       </ScrollView>
+
+      {/* ---------- BOTTOM BAR ---------- */}
+
+      <View style={styles.bottomBar}>
+        <View>
+          <Text style={styles.priceLabel}>Rent</Text>
+          <Text style={styles.price}>₹ {price}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.cta}>
+          <Text style={styles.ctaText}>Contact Owner</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 
-/* ================= STAT ================= */
-function Stat({ label, value }: { label: string; value: number }) {
+function Feature({ label, value }: any) {
+  if (!value) return null;
   return (
-    <View style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+    <View style={styles.featureRow}>
+      <Text style={styles.featureLabel}>{label}</Text>
+      <Text style={styles.featureValue}>{value}</Text>
     </View>
   );
 }
 
-/* ================= STYLES ================= */
+function GridItem({ label, value }: any) {
+  if (!value) return null;
+  return (
+    <View style={styles.gridItem}>
+      <Text style={styles.gridLabel}>{label}</Text>
+      <Text style={styles.gridValue}>{value}</Text>
+    </View>
+  );
+}
+
+function IconBtn({ children, onPress }: any) {
+  return (
+    <TouchableOpacity style={styles.iconBtn} onPress={onPress}>
+      {children}
+    </TouchableOpacity>
+  );
+}
+
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#F9FAFB" },
-  container: { padding: 16, paddingBottom: 140 },
+  container: { padding: 16 },
+
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  topSpinner: { position: "absolute", top: 8, right: 8, zIndex: 10 },
-  title: { fontSize: 20, fontWeight: "700", marginBottom: 8 },
+
+  image: {
+    width,
+    height: 260,
+  },
+
+  topBar: {
+    position: "absolute",
+    top: 12,
+    left: 12,
+    right: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  iconBtn: {
+    backgroundColor: "#fff",
+    padding: 8,
+    borderRadius: 20,
+  },
+
+  title: { fontSize: 20, fontWeight: "700", marginTop: 12 },
+  location: { color: "#6B7280", marginTop: 4 },
+
   card: {
     backgroundColor: "#fff",
+    borderRadius: 12,
     padding: 14,
-    borderRadius: 12,
+    marginTop: 14,
     borderWidth: 1,
     borderColor: "#eee",
-    marginTop: 12,
   },
-  label: { fontSize: 12, color: "#6B7280", marginTop: 6 },
-  value: { fontSize: 15, fontWeight: "600" },
-  statsRow: { flexDirection: "row", gap: 12, marginTop: 16 },
-  stat: {
-    flex: 1,
+
+  featureRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 6,
+  },
+
+  featureLabel: { color: "#6B7280" },
+  featureValue: { fontWeight: "600" },
+
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginTop: 20,
+    marginBottom: 8,
+  },
+
+  desc: {
+    lineHeight: 20,
+    color: "#374151",
+  },
+
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+
+  gridItem: {
+    width: "48%",
     backgroundColor: "#fff",
-    borderRadius: 12,
     padding: 12,
-    alignItems: "center",
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: "#eee",
   },
-  statValue: { fontSize: 18, fontWeight: "700" },
-  statLabel: { fontSize: 12, color: "#6B7280" },
+
+  gridLabel: { color: "#6B7280", fontSize: 12 },
+  gridValue: { fontWeight: "600", marginTop: 4 },
+
+  bottomBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    padding: 14,
+    borderTopWidth: 1,
+    borderColor: "#eee",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  priceLabel: { fontSize: 12, color: "#6B7280" },
+  price: { fontSize: 18, fontWeight: "700" },
+
+  cta: {
+    backgroundColor: "#EF4444",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+
+  ctaText: { color: "#fff", fontWeight: "700" },
 });

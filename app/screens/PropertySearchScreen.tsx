@@ -79,7 +79,7 @@ export default function PropertySearchClient() {
   // ✅ Navigate to single unified PropertyDetails screen
   const handlePropertyPress = (property: any) => {
     navigation.navigate("PropertyDetails", {
-      propertyID: String(property.propertyID),
+      property: property,
     });
   };
 
